@@ -1,6 +1,78 @@
 {
-  "gomod": {
-    "enabled": false
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "enabledManagers": ["dockerfile", "gomod"],
+  "commitMessagePrefix": "UPSTREAM: <carry>: ",
+  "packageRules": [
+    {
+      "description": "Disable all Dockerfile updates by default. Only specific files will get targeted.",
+      "matchManagers": ["dockerfile"],
+      "enabled": false
+    },
+    {
+      "description": "Enable Docker image updates for Red Hat UBI images on major version 9",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": [
+        "Containerfile.externaldns"
+      ],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "registry.access.redhat.com/ubi9/ubi-minimal",
+        "registry.access.redhat.com/ubi9/ubi"
+      ],
+      "enabled": true,
+      "versioning": "redhat",
+      "allowedVersions": "/^9(\\.|$)/"
+    },
+    {
+      "description": "Keep Go toolset on minor version 1.22",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": [
+        "Containerfile.externaldns"
+      ],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "registry.access.redhat.com/ubi9/go-toolset"
+      ],
+      "enabled": true,
+      "versioning": "redhat",
+      "allowedVersions": "/^1\\.22(\\.|$)/"
+    },
+    {
+      "description": "Enable Docker image updates for OpenShift CI builder images",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": [
+        "Dockerfile.openshift",
+        "drift-cache/Dockerfile"
+      ],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "registry.ci.openshift.org/ocp/builder"
+      ],
+      "enabled": true,
+      "versioning": "regex:^rhel-(?<major>\\d+)-golang-(?<minor>\\d+)\\.(?<patch>\\d+)-openshift-(?<build>\\d+\\.\\d+)$"
+    },
+    {
+      "description": "Enable Docker image updates for OpenShift CI base images",
+      "matchManagers": ["dockerfile"],
+      "matchFileNames": [
+        "Dockerfile.openshift",
+        "drift-cache/Dockerfile"
+      ],
+      "matchDatasources": ["docker"],
+      "matchPackageNames": [
+        "registry.ci.openshift.org/ocp/4.17"
+      ],
+      "enabled": true,
+      "versioning": "regex:^(?<compatibility>base-rhel)(?<major>\\d+)$"
+    },
+    {
+      "description": "Disable regular Go module updates, only allow vulnerability alerts",
+      "matchManagers": ["gomod"],
+      "enabled": false
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true
   },
-  "commitMessagePrefix": "UPSTREAM: <carry>: "
+  "osvVulnerabilityAlerts": true
 }
